@@ -18,7 +18,7 @@ To have synchronized environments, please put all your `.python` scrpits in the 
 This step is necessary the first time you start working _and_ every time you make changes on the `requirements.txt`!
 
 ```
-docker build -t diracdynamics/prototyping .
+docker build -t diracdynamics/solver .
 ```
 
 ### Run Container
@@ -28,13 +28,13 @@ When you have built the latest version of the container, execute it with the fol
 - On Mac, Linux, Windows Powershell:
 
 ```
-docker run -it -v ${PWD}/src:/src diracdynamics/prototyping /bin/bash
+docker run -it -v ${PWD}/src:/src diracdynamics/solver /bin/bash
 ```
 
 - On Windows no Powershell:
 
 ```
-docker run -it -v %cd%/src:/src diracdynamics/prototyping /bin/bash
+docker run -it -v %cd%/src:/src diracdynamics/solver /bin/bash
 ```
 
 This will start a docker container with all necessary pip requirements installed (check to build the Docker container after changing the `requiments.txt`!). You can edit any file inside your favourite IDE in the `/src` folder of this repository and execute them _inside_ the running docker container with `python {YOUR_SCRIPT_NAME}.py`. 
