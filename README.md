@@ -1,6 +1,7 @@
 # Usage
 
-The Jupyter notebooks are intended to speed up prototyping. In order to have a consistent environment across all devs of `Dirac Dynamics`, please run jupyter through the provided Dockerfile.
+No Jupyter notebooks!
+~~The Jupyter notebooks are intended to speed up prototyping. In order to have a consistent environment across all devs of `Dirac Dynamics`, please run jupyter through the provided Dockerfile.~~
 
 Happy coding! :-)
 
@@ -8,9 +9,9 @@ Happy coding! :-)
 
 * Docker
 
-## Run Jupyter
+## Run Scripts
 
-In order to work on the notebook, please build & run the docker container with the following commands.
+To have synchronized environments, please put all your `.python` scrpits in the `/src` folder and run them only inside the Docker container, following the steps:
 
 ### Build Container
 
@@ -27,16 +28,16 @@ When you have built the latest version of the container, execute it with the fol
 - On Mac, Linux, Windows Powershell:
 
 ```
-docker run -p 8888:8888 -v ${PWD}/notebooks:/src/notebooks diracdynamics/prototyping
+docker run -it -v ${PWD}/src:/src diracdynamics/prototyping /bin/bash
 ```
 
 - On Windows no Powershell:
 
 ```
-docker run -p 8888:8888 -v %cd%/notebooks:/src/notebooks diracdynamics/prototyping
+docker run -it -v %cd%/src:/src diracdynamics/prototyping /bin/bash
 ```
 
-This will start a docker container running the Jupyter notebook. The address of the server will be shown in the cli.
+This will start a docker container with all necessary pip requirements installed (check to build the Docker container after changing the `requiments.txt`!). You can edit any file inside your favourite IDE in the `/src` folder of this repository and execute them _inside_ the running docker container with `python {YOUR_SCRIPT_NAME}.py`. 
 
 ## Troubleshooting
 
