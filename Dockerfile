@@ -8,5 +8,5 @@ RUN pip install -r /tmp/requirements.txt
 RUN mkdir src
 WORKDIR /src/
 
-ENTRYPOINT ["/bin/sh", "-c"]
+CMD ["jupyter", "lab", "--ip='0.0.0.0'", "--port=8888", "--no-browser", "--NotebookApp.token=''", "--NotebookApp.password=''"]
 
