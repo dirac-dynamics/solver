@@ -1,2 +1,7 @@
 qiskit
 ortools
+networkx
+qiskit
+osmnx
+matplotlib
+numpy
