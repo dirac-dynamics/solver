@@ -76,9 +76,6 @@ def create_from_city(city,
     # plotting routine
     color_list = ['r', 'b', 'g', 'y']
     # color_list=['C00','C01','C02','C03','C04','C05']
-    print(dic['route_list'])
-    print(dic['end_list'])
-    print(dic['carrier_number'])
     plot_assigned_routes(G, carriers, transportables, optimal_routes, dic['route_list'], dic['end_list'], dic['carrier_number'])
 
     print()
