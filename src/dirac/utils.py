@@ -34,6 +34,26 @@ def fetch_city(city):
         return graph
     else:
         raise TypeError("City must be string")
+        
+def fetch_city_2(name,north,south,east,west):
+    if isinstance(name, str):
+        data = json.load(open('../maps/places.json'))
+        if name in data:
+            graph = ox.io.load_graphml(data[name])
+            print('Graph loaded..')
+            
+        else:
+            print('Fetching graph..')
+            graph = ox.graph.graph_from_bbox(north, south, east, west, network_type='drive')
+            ox.io.save_graphml(graph, filepath='../maps/%s.graphml' % (name))
+            data[name] = '../maps/%s.graphml' % (name)
+            with open('../maps/places.json', 'w') as outfile:
+                json.dump(data, outfile)
+                
+            print('Graph loaded..')
+        return graph
+    else:
+        raise TypeError("City must be string")
 
         
 def no_dead_ends(graph):
@@ -75,24 +95,35 @@ def set_speed(graph, german=False):
     return graph
 
 
-def set_objects(G, carrier_number, transportable_number, random=True, positions=None):
+def set_objects(G, carrier_number, transportable_number, random=True, carrier_list=None, transportable_list=None):
     
     #number of entities
     carrier_number = carrier_number
     transportable_number = transportable_number
     G = G
     
-    
+    if random == True:
     #functions to select random nodes
-    def create_random_node_points(number,Graph):
-        node_list=[]
-        for i in range(number):
-            node_list.append(rng.randint(0,len(list(G.nodes))-1))
-        return node_list
-    
+        def create_random_node_points(number,Graph):
+            node_list=[]
+            for i in range(number):
+                node_list.append(rng.randint(0,len(list(G.nodes))-1))
+            return node_list
+        
+        carriers = create_random_node_points(carrier_number,G)
+        transportables = create_random_node_points(transportable_number,G)
+        print('Random entities generated..')
+    else:
+        carriers = []
+        transportables = []
+        for i, carrier in enumerate(carrier_list):
+            carriers.append(ox.distance.get_nearest_node(G, (carrier[0],carrier[1])))
+                            
+        for i, transportable in enumerate(transportable_list):
+            transportables.append(ox.distance.get_nearest_node(G, (transportable[0],transportable[1])))
+        print('Entities loaded from input..')
     #create random carriers and transportables
-    carriers = create_random_node_points(carrier_number,G)
-    transportables = create_random_node_points(transportable_number,G)
+    
     
     return G, carriers, transportables
     
@@ -111,7 +142,7 @@ def find_paths(G, carriers, transportables):
             #if (ox.distance.euclidean_dist_vec(dic['node_info'][carrier]['y'],
             #                                   dic['node_info'][carrier]['x'],
             #                                   dic['node_info'][transportable]['y'],
-            #                                   dic['node_info'][transportable]['x'])) <= 1:
+            #                                   dic['node_info'][transportable]['x'])) <= 0.15:
 
                 dic['connection_list'].append(j+1+len(carriers))
                 temp_dic['end_numbers'].append(j)
@@ -136,3 +167,17 @@ def find_paths(G, carriers, transportables):
     print('Paths found..')
         
     return G, dic
+
+
+def output_routes(Graph,opt_routes,dic):
+        index_routes = []
+        coord_routes = []
+        for element in opt_routes:
+            index_routes.append(dic['route_list'][element[0]-1][dic['end_list'][element[0]-1].index(element[1]-1)])
+            
+        for route in index_routes:
+            coord_route = []
+            for i, node_index in enumerate(route):
+                coord_route.append((dic['node_info'][node_index]['y'],dic['node_info'][node_index]['x']))
+            coord_routes.append(coord_route)
+        return coord_routes
