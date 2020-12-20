@@ -1,2 +1,11 @@
 /src/cache
 .DS_Store
+/venv/
+/src/examples/
+/src/.ipynb_checkpoints
+/src/dirac/.ipynb_checkpoints/
+/src/dirac/cache/
+/src/maps/.ipynb_checkpoints/
+/src/playground/.ipynb_checkpoints/
+/src/playground/cache/
+/src/playground/graphs/
