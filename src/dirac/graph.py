@@ -113,7 +113,7 @@ def create_from_city(city, north, south, east, west,
     print('Improvement to greedy: ' + str(round(((1-cost_solver/cost_greedy_2)*100),2)) + ' %')
 
     return optimal_routes_solv, coord_routes_solv, optimal_routes_greed, coord_routes_greed
-
+"""
 carrier_list = []
 transportable_list = []
 
@@ -122,6 +122,6 @@ for i in range(10):
     transportable_list.append((48.143743 + 0.05 * (rng.random() * 2 - 1),11.575942 + 0.10 * (rng.random() * 2 - 1)))
 
 print(create_from_city('munich_2', 48.143743 + 0.05, 48.143743 - 0.05, 11.575942 + 0.10, 11.575942 - 0.10, len(carrier_list), len(transportable_list), random=False,carrier_list=carrier_list, transportable_list=transportable_list))
-
+"""
 #for i in range(10):
 #    create_from_city('munich', 10, 10)
