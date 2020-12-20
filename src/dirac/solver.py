@@ -6,20 +6,33 @@ Created on Wed Dec 16 16:00:33 2020
 """
 from __future__ import print_function
 from ortools.graph import pywrapgraph
-import time
-import os
-import random as rng
-import multiprocessing as mp
 import numpy as np
 import osmnx as ox
-import matplotlib.pyplot as plt
 ox.config(use_cache=True, log_console=False)
-ox.__version__
+# ox.__version__
 import networkx as nx
 
 
+# def network_solver(carriers, transportables, weight_list):
+#     ALI_G = nx.DiGraph()
+#     counter = 0
+#
+#     for j, trans in enumerate(transportables):
+#         ALI_G.add_node(trans, demand = 1)
+#
+#     for i, car in enumerate(carriers):
+#         ALI_G.add_node(car, demand = -1)
+#
+#     for i, car in enumerate(carriers):
+#         for j, trans in enumerate(transportables):
+#             ALI_G.add_edge(car, trans, weight=int(weight_list[counter]), capacity=1)
+#             counter += 1
+#
+#     flowDict_alt = nx.min_cost_flow(G)
+#     #TODO: How to read the data?
 
-def simp_min_cost_flow(number_carriers, numbers_carriers, weights, number_connections):
+
+def simp_min_cost_flow(n_carrier,n_transportables,weights,connections,n_connections):
     
 
     min_cost_flow = pywrapgraph.SimpleMinCostFlow()
@@ -37,7 +50,7 @@ def simp_min_cost_flow(number_carriers, numbers_carriers, weights, number_connec
 
     capacities =np.zeros(n_carrier+sum(n_connections)+n_transportables)+1
 
-    costs = np.concatenate((np.zeros(n_carrier), weight_list, np.zeros(n_transportables)))
+    costs = np.concatenate((np.zeros(n_carrier), weights, np.zeros(n_transportables)))
 
     start_nodes = start_nodes.astype(int)
     end_nodes = end_nodes.astype(int)
@@ -69,25 +82,25 @@ def simp_min_cost_flow(number_carriers, numbers_carriers, weights, number_connec
     output = []
 
     if min_cost_flow.Solve() == min_cost_flow.OPTIMAL:
-    #   if min_cost_flow.SolveMaxFlowWithMinCost() == min_cost_flow.OPTIMAL:
-    print('Total cost = ', min_cost_flow.OptimalCost())
-    print()
-    for arc in range(min_cost_flow.NumArcs()):
+        #   if min_cost_flow.SolveMaxFlowWithMinCost() == min_cost_flow.OPTIMAL:
+        print('Total cost = ', min_cost_flow.OptimalCost())
+        print()
+        for arc in range(min_cost_flow.NumArcs()):
 
-      # Can ignore arcs leading out of source or into sink.
-      if min_cost_flow.Tail(arc)!=source and min_cost_flow.Head(arc)!=sink:
+          # Can ignore arcs leading out of source or into sink.
+          if min_cost_flow.Tail(arc)!=source and min_cost_flow.Head(arc)!=sink:
 
-        # Arcs in the solution have a flow value of 1. Their start and end nodes
-        # give an assignment of worker to task.
+            # Arcs in the solution have a flow value of 1. Their start and end nodes
+            # give an assignment of worker to task.
 
-        if min_cost_flow.Flow(arc) > 0:
-            print('Carrier %d assigned to transportable %d.  Cost = %d' % (
-                min_cost_flow.Tail(arc),
-                min_cost_flow.Head(arc)-n_carrier,
-                min_cost_flow.UnitCost(arc)))
-            output.append([min_cost_flow.Tail(arc),min_cost_flow.Head(arc)])
+            if min_cost_flow.Flow(arc) > 0:
+                print('Carrier %d assigned to transportable %d.  Cost = %d' % (
+                    min_cost_flow.Tail(arc),
+                    min_cost_flow.Head(arc)-n_carrier,
+                    min_cost_flow.UnitCost(arc)))
+                output.append([min_cost_flow.Tail(arc),min_cost_flow.Head(arc)-n_carrier])
     else:
-    print('There was an issue with the min cost flow input.')
+        print('There was an issue with the min cost flow input.')
 
     return output
     

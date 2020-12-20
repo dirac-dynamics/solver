@@ -17,11 +17,12 @@ import matplotlib.pyplot as plt
 ox.config(use_cache=True, log_console=False)
 ox.__version__
 import networkx as nx
+from collections import defaultdict
 
-# place = 'Munich, Bavaria, Germany'
-# G = ox.graph_from_place(place, network_type='drive')
+place = 'Munich, Bavaria, Germany'
+G = ox.graph_from_place(place, network_type='drive')
 
-G = ox.io.load_graphml('/maps/munich.graphml')
+# G = ox.io.load_graphml('/maps/munich.graphml')
 
     
 start_time = time.process_time()
@@ -107,6 +108,40 @@ for i in range(len(carriers)):
     connection_number.append(counter)
     route_list.append(ways_to_transportables)
 
+######################################################################
+
+
+dic = defaultdict(lambda: [])
+    
+dic['node_info'] = node_info
+
+for i, carrier in enumerate(carriers):
+    temp_dic = defaultdict(lambda: [])
+    counter = 0
+    for j, transportable in enumerate(transportables):
+
+        if (ox.distance.euclidean_dist_vec(dic['node_info'][carrier]['y'],
+                                           dic['node_info'][carrier]['x'],
+                                           dic['node_info'][transportable]['y'],
+                                           dic['node_info'][transportable]['x'])) <= 1:
+
+            dic['connection_list'].append(j+1+len(carriers))
+            temp_dic['end_numbers'].append(j)
+            way = ox.shortest_path(G, carrier, transportable, weight='length')
+            temp_dic['ways_to_transportable'].append(way)
+            way_weight = 0
+
+            for k in range(len(way)-1):
+                way_weight += G[way[k]][way[k+1]][0]['length']
+
+            dic['weight_list'].append(way_weight)
+            counter+=1
+
+    dic['end_list'].append(temp_dic['end_numbers'])
+    dic['connection_number'].append(counter)
+    dic['route_list'].append(temp_dic['ways_to_transportable'])
+    
+######################################################################
 
 
 print("Time =", time.process_time() - start_time, "seconds")
@@ -116,9 +151,6 @@ def main(n_carrier,n_transportables,weights,connections,n_connections):
 
   # Instantiate a SimpleMinCostFlow solver.
   min_cost_flow = pywrapgraph.SimpleMinCostFlow()
-#       min_cost_flow = pywrapgraph.GenericMinCostFlow()
-#       min_cost_flow = pywrapgraph.MinCostFlowBase()
-#       min_cost_flow = pywrapgraph.MinCostFlow()
 
   # Define the directed graph for the flow.
   start_nodes = np.zeros(n_carrier)
@@ -220,6 +252,29 @@ for node in G.nodes():
 routes_to_plot = []
 for element in optimal_routes:
     routes_to_plot.append(route_list[element[0]-1][end_list[element[0]-1].index(element[1]-carrier_number-1)])
+ 
+
+######################################################################
+
+ALI_G = nx.DiGraph()
+counter = 0 
+for j, trans in enumerate(transportables):
+    ALI_G.add_node(trans, demand = 1)
+
+for i, car in enumerate(carriers):
+    ALI_G.add_node(car, demand = -1)
+
+
+
+for i, car in enumerate(carriers):
+    for j, trans in enumerate(transportables):
+        ALI_G.add_edge(car, trans, weight=int(dic['weight_list'][counter]), capacity=1)
+        counter += 1
+        
+flowDict_alt = nx.min_cost_flow(ALI_G)
+print(flowDict_alt)
+
+######################################################################
 
 
 ox.plot.plot_graph_routes(G,routes_to_plot,route_colors='w', show=True, close=False, node_color=nc, node_size=ns)

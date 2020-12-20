@@ -1,4 +1,9 @@
 from __future__ import print_function
+# import .utils
+from utils import *
+from solver import *
+from plot import *
+
 from ortools.graph import pywrapgraph
 import time
 import os
@@ -8,21 +13,20 @@ import numpy as np
 import osmnx as ox
 import matplotlib.pyplot as plt
 import copy
-ox.config(use_cache=True, log_console=True)
-ox.__version__
 import networkx as nx
-import util
+
+ox.config(use_cache=True, log_console=True)
+# ox.__version__
+
+# functions to select random nodes
 
 
-
-
-
-#functions to select random nodes
-def create_random_node_points(number,Graph):
-    node_list=[]
+def create_random_node_points(number, graph):
+    node_list = []
     for i in range(number):
-        node_list.append(rng.randint(0,len(list(node_info))-1))
+        node_list.append(rng.randint(0, len(list(graph.nodes)) - 1))
     return node_list
+
 
 def create_from_city(city,
                      carrier_number,
@@ -32,62 +36,55 @@ def create_from_city(city,
                      dead_ends=True,
                      carrier_list=None,
                      transportable_list=None):
-    
     # loads graph
-    G = fetch_city(city, dead_ends=dead_ends)
-    
+    G = fetch_city(city)
+
     if not dead_ends:
         G = no_dead_ends(G)
-    
-    G = set_speed(graph, german=False)
-    
+
+    G = set_speed(G, german=True)
+
     G = nx.convert_node_labels_to_integers(G)
     node_info = G.nodes
-    
+
     carrier_number = carrier_number
     transportable_number = transportable_number
-    
-    #TODO: Write else for input lists and catch for exception
-    if random:
-        #create random carriers and transportables
-        carriers = create_random_node_points(carrier_number,G)
-        transportables = create_random_node_points(transportable_number,G)
-    
-    #find paths from carriers to transportables
-    
-    node_info = node_info
-    route_list = []
-    weight_list = []
-    weight_list_2 = []
 
-    connection_list = []
-    connection_number = []
-    end_list = []
-    start_end_list =[]
+    # # TODO: Write else for input lists and catch for exception
+    # if random:
+    #     # create random carriers and transportables
+    #     carriers = create_random_node_points(carrier_number, G)
+    #     transportables = create_random_node_points(transportable_number, G)
 
-    for i in range(len(carriers)):
-        ways_to_transportables = []
-        weights_to_transportables = []
-        start_to_end = []
-        end_numbers = []
-        counter=0
-        for j in range(len(transportables)):
-                connection_list.append(j+1+carrier_number)
-                end_numbers.append(j)
-                start_to_end.append([i,j])
-                way = ox.shortest_path(G2, carriers[i], transportables[j], weight='travel_time')
-                ways_to_transportables.append(way)
-                way_weight=0
-                for k in range(len(way)-1):
-                    way_weight += (G2[way[k]][way[k+1]][0]['travel_time'])
-                weight_list.append(way_weight)
-                weights_to_transportables.append(way_weight)
-                counter+=1
+    G, carriers, transportables = set_objects(G, carrier_number, transportable_number)
 
-        end_list.append(end_numbers)
-        connection_number.append(counter)
-        route_list.append(ways_to_transportables)
-        weight_list_2.append(weights_to_transportables)
-        start_end_list.append(start_to_end)
-    
-    
+    # find paths from carriers to transportables
+    G, dic = find_paths(G, carriers, transportables)
+
+    optimal_routes = simp_min_cost_flow(len(carriers),
+                                        len(transportables),
+                                        dic['weight_list'],
+                                        dic['connection_list'],
+                                        dic['connection_number'])
+
+    # print()
+    # print("Time =", time.process_time() - start_time, "seconds")
+    # print()
+    # print(optimal_routes)
+    start_time = time.process_time()
+
+    # plotting routine
+    color_list = ['r', 'b', 'g', 'y']
+    # color_list=['C00','C01','C02','C03','C04','C05']
+    print(dic['route_list'])
+    print(dic['end_list'])
+    print(dic['carrier_number'])
+    plot_assigned_routes(G, carriers, transportables, optimal_routes, dic['route_list'], dic['end_list'], dic['carrier_number'])
+
+    print()
+    print("Time =", time.process_time() - start_time, "seconds")
+    print()
+    start_time = time.process_time()
+
+
+create_from_city('munich', 10, 10)
