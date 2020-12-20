@@ -102,8 +102,9 @@ def create_from_city(city,
     
     print()
     print()
-    print('Improvement to greedy 1: ' + str((1-cost_solver/cost_greedy_1)*100) + ' %')
-    print('Improvement to greedy 2: ' + str((1-cost_solver/cost_greedy_2)*100) + ' %')
+    print('Improvement to greedy 1: %2f' % ((1-cost_solver/cost_greedy_1)*100) + ' %')
+    print('Improvement to greedy 2: %2f' % ((1-cost_solver/cost_greedy_2)*100) + ' %')
+
 
 
 

@@ -123,8 +123,8 @@ def find_paths(G, carriers, transportables):
                 for k in range(len(way)-1):
                     way_weight += G[way[k]][way[k+1]][0]['travel_time']
                     
-                dic['weight_list'].append(way_weight)
-                temp_dic['weights_to_transportables'].append(way_weight)
+                dic['weight_list'].append(int(way_weight))
+                temp_dic['weights_to_transportables'].append(int(way_weight))
                 counter+=1
 
         dic['end_list'].append(temp_dic['end_numbers'])
@@ -132,5 +132,7 @@ def find_paths(G, carriers, transportables):
         dic['route_list'].append(temp_dic['ways_to_transportable'])
         dic['weight_list_2'].append(temp_dic['weights_to_transportables'])
         dic['start_end_list'].append(temp_dic['start_to_end'])
+        
+    print('Paths found..')
         
     return G, dic
