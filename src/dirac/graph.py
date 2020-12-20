@@ -1,22 +1,14 @@
 from __future__ import print_function
-# import .utils
 from utils import *
 from solver import *
 from plot import *
 
-from ortools.graph import pywrapgraph
 import time
-import os
 import random as rng
-import multiprocessing as mp
-import numpy as np
 import osmnx as ox
-import matplotlib.pyplot as plt
-import copy
 import networkx as nx
 
 ox.config(use_cache=True, log_console=True)
-# ox.__version__
 
 # functions to select random nodes
 

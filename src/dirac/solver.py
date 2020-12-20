@@ -9,8 +9,7 @@ from ortools.graph import pywrapgraph
 import numpy as np
 import osmnx as ox
 ox.config(use_cache=True, log_console=False)
-# ox.__version__
-import networkx as nx
+
 
 
 # def network_solver(carriers, transportables, weight_list):

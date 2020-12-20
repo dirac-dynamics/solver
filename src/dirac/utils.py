@@ -1,18 +1,10 @@
 from __future__ import print_function
-from ortools.graph import pywrapgraph
-import time
-import os
 import random as rng
-import multiprocessing as mp
-import numpy as np
 import osmnx as ox
-import matplotlib.pyplot as plt
-import copy
 ox.config(use_cache=True, log_console=False)
 ox.__version__
-import networkx as nx
 import json
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 
 
 def fetch_city(city):
