@@ -108,25 +108,31 @@ def find_paths(G, carriers, transportables):
         counter = 0
         for j, transportable in enumerate(transportables):
 
-            if (ox.distance.euclidean_dist_vec(dic['node_info'][carrier]['y'],
-                                               dic['node_info'][carrier]['x'],
-                                               dic['node_info'][transportable]['y'],
-                                               dic['node_info'][transportable]['x'])) <= 1:
+            #if (ox.distance.euclidean_dist_vec(dic['node_info'][carrier]['y'],
+            #                                   dic['node_info'][carrier]['x'],
+            #                                   dic['node_info'][transportable]['y'],
+            #                                   dic['node_info'][transportable]['x'])) <= 1:
 
                 dic['connection_list'].append(j+1+len(carriers))
                 temp_dic['end_numbers'].append(j)
-                way = ox.shortest_path(G, carrier, transportable, weight='length')
+                temp_dic['start_to_end'].append([i,j])
+                way = ox.shortest_path(G, carrier, transportable, weight='travel_time')
                 temp_dic['ways_to_transportable'].append(way)
                 way_weight = 0
 
                 for k in range(len(way)-1):
-                    way_weight += G[way[k]][way[k+1]][0]['length']
-
-                dic['weight_list'].append(way_weight)
+                    way_weight += G[way[k]][way[k+1]][0]['travel_time']
+                    
+                dic['weight_list'].append(int(way_weight))
+                temp_dic['weights_to_transportables'].append(int(way_weight))
                 counter+=1
 
         dic['end_list'].append(temp_dic['end_numbers'])
         dic['connection_number'].append(counter)
         dic['route_list'].append(temp_dic['ways_to_transportable'])
+        dic['weight_list_2'].append(temp_dic['weights_to_transportables'])
+        dic['start_end_list'].append(temp_dic['start_to_end'])
+        
+    print('Paths found..')
         
     return G, dic
