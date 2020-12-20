@@ -60,28 +60,51 @@ def create_from_city(city,
 
     # find paths from carriers to transportables
     G, dic = find_paths(G, carriers, transportables)
+    
+    print()
+    print('Classical network flow solver:')
+    print()
 
-    optimal_routes = simp_min_cost_flow(len(carriers),
+    optimal_routes, cost_solver = simp_min_cost_flow(len(carriers),
                                         len(transportables),
                                         dic['weight_list'],
                                         dic['connection_list'],
                                         dic['connection_number'])
 
-    # print()
-    # print("Time =", time.process_time() - start_time, "seconds")
-    # print()
-    # print(optimal_routes)
-    start_time = time.process_time()
+   
 
-    # plotting routine
-    color_list = ['r', 'b', 'g', 'y']
-    # color_list=['C00','C01','C02','C03','C04','C05']
+    plot_assigned_routes(G, carriers, transportables, optimal_routes, dic['route_list'], dic['end_list'], dic['carrier_number'])
+    
+
+    print()
+    print('Greedy 1 solver:')
+    print()
+    
+    weight_list_2_copy = copy.deepcopy(dic['weight_list_2'])
+    end_list_copy = copy.deepcopy(dic['end_list'])
+
+    optimal_routes, cost_greedy_1=greedy_algo(weight_list_2_copy,end_list_copy,carrier_number, transportable_number)
+
     plot_assigned_routes(G, carriers, transportables, optimal_routes, dic['route_list'], dic['end_list'], dic['carrier_number'])
 
+    
     print()
-    print("Time =", time.process_time() - start_time, "seconds")
+    print('Greedy 2 solver:')
     print()
-    start_time = time.process_time()
+
+    weight_list_2_copy = copy.deepcopy(dic['weight_list_2'])
+    start_end_list_copy = copy.deepcopy(dic['start_end_list'])
+    
+    optimal_routes, cost_greedy_2=greedy_algo_2(weight_list_2_copy,start_end_list_copy,carrier_number, transportable_number)
+
+    plot_assigned_routes(G, carriers, transportables, optimal_routes, dic['route_list'], dic['end_list'], dic['carrier_number'])
+    
+    
+    print()
+    print()
+    print('Improvement to greedy 1: ' + str((1-cost_solver/cost_greedy_1)*100) + ' %')
+    print('Improvement to greedy 2: ' + str((1-cost_solver/cost_greedy_2)*100) + ' %')
+
 
 
 create_from_city('munich', 10, 10)

@@ -83,8 +83,7 @@ def simp_min_cost_flow(n_carrier,n_transportables,weights,connections,n_connecti
 
     if min_cost_flow.Solve() == min_cost_flow.OPTIMAL:
         #   if min_cost_flow.SolveMaxFlowWithMinCost() == min_cost_flow.OPTIMAL:
-        print('Total cost = ', min_cost_flow.OptimalCost())
-        print()
+        
         for arc in range(min_cost_flow.NumArcs()):
 
           # Can ignore arcs leading out of source or into sink.
@@ -99,8 +98,64 @@ def simp_min_cost_flow(n_carrier,n_transportables,weights,connections,n_connecti
                     min_cost_flow.Head(arc)-n_carrier,
                     min_cost_flow.UnitCost(arc)))
                 output.append([min_cost_flow.Tail(arc),min_cost_flow.Head(arc)-n_carrier])
+        
+        print()
+        print('Total cost = ', min_cost_flow.OptimalCost())
     else:
         print('There was an issue with the min cost flow input.')
 
-    return output
+    return output, min_cost_flow.OptimalCost()
+
+
+def greedy_algo(weights, ends, car_num, trans_num):
+    overall_cost = 0
+    output = []
+    for i in range(min([car_num,trans_num])):
+        picked_index = weights[i].index(min(weights[i]))
+        picked_end =  ends[i][picked_index]
+        overall_cost += weights[i][picked_index]
+        output.append([i+1,picked_end+1])
+        print('Carrier %d assigned to transportable %d.  Cost = %d' % (
+                i+1,
+                picked_end+1,
+                weights[i][picked_index]))
+        for j in range(len(ends)):
+            if picked_end in ends[j]:
+                index=ends[j].index(picked_end)
+                del ends[j][index]
+                del weights[j][index]
+    print()
+    print('Total cost = ',overall_cost)
+    return output, overall_cost
+
+
+
+def greedy_algo_2(weights, connects, car_num, trans_num):
+    overall_cost = 0
+    output = []
+    for i in range(min([car_num,trans_num])):
+        zipped = zip(weights, connects)
+        new_zipped = sorted(zipped, key = lambda t: min(t[0]))
+        weights,connects = zip(*new_zipped)
+        weights =list(weights)
+        connects =list(connects)
+        picked_index = weights[0].index(min(weights[0]))
+        picked_connect =  connects[0][picked_index]
+        overall_cost += weights[0][picked_index]
+        output.append([picked_connect[0]+1,picked_connect[1]+1])
+        print('Carrier %d assigned to transportable %d.  Cost = %d' % (
+                picked_connect[0]+1,
+                picked_connect[1]+1,
+                weights[0][picked_index]))
+        for j in range(len(connects)):
+            for k in range(len(connects[j])):
+                if picked_connect[1] == connects[j][k][1]:
+                    del connects[j][k]
+                    del weights[j][k]
+                    break
+        del connects[0]
+        del weights[0]
+    print()
+    print('Total cost = ',overall_cost)
+    return output, overall_cost
     
