@@ -12,7 +12,7 @@ ox.config(use_cache=True, log_console=False)
 # ox.__version__
 import networkx as nx
 
-#from utils import *
+from utils import *
 
 def set_trans_node(node_index):
     func_start_nodes = [node_index, node_index, node_index+3]

@@ -7,12 +7,10 @@ Created on Mon Jan 18 17:36:36 2021
 from __future__ import print_function
 #print('test')
 # import .utils
-#from utils import *
+from utils import *
 
 import utils_osmnx as uo
 
-
-from collections import OrderedDict, defaultdict
 
 from ortools.graph import pywrapgraph
 import time
